@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pizza Paradise — Jalahalli West, Bengaluru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --black:   #0b0b0b;
+      --deep:    #111111;
+      --card:    #181818;
+      --border:  #2a2a2a;
+      --red:     #e8232a;
+      --orange:  #f77f00;
+      --gold:    #ffd166;
+      --cream:   #fdf0d5;
+      --text:    #e8e0d4;
+      --muted:   #888;
+      --glow:    rgba(232,35,42,0.25);
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-serif:   'Playfair Display', serif;
+      --font-body:    'Sora', sans-serif;
+    }
+
+    /* ─── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+    img { display:block; width:100%; height:100%; object-fit:cover; }
+    a { text-decoration:none; color:inherit; }
+
+    /* ─── GRAIN OVERLAY ──────────────────────────────────── */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:9999; opacity:.5;
+    }
+
+    /* ─── SCROLL ANIMATIONS ──────────────────────────────── */
+    .reveal { opacity:0; transform:translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .reveal-left { opacity:0; transform:translateX(-40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-left.visible { opacity:1; transform:translateX(0); }
+    .reveal-right { opacity:0; transform:translateX(40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-right.visible { opacity:1; transform:translateX(0); }
+
+    /* ─── NAV ────────────────────────────────────────────── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:1000;
+      display: flex; align-items:center; justify-content:space-between;
+      padding: 18px 5%;
+      background: rgba(11,11,11,0);
+      backdrop-filter: blur(0px);
+      transition: background .4s, backdrop-filter .4s, padding .4s, box-shadow .4s;
+    }
+    nav.scrolled {
+      background: rgba(11,11,11,0.92);
+      backdrop-filter: blur(16px);
+      padding: 12px 5%;
+      box-shadow: 0 2px 40px rgba(0,0,0,.6);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display:flex; gap:28px; list-style:none; }
+    .nav-links a {
+      font-size:.85rem; font-weight:600; letter-spacing:1.5px;
+      text-transform:uppercase; color: var(--muted);
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      padding: 9px 22px; border-radius:50px;
+      font-size:.8rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .nav-cta:hover { transform:scale(1.05); box-shadow:0 0 20px var(--glow); }
+
+    /* ─── HAMBURGER ──────────────────────────────────────── */
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .hamburger span { display:block; width:24px; height:2px; background:var(--text); border-radius:2px; transition:.3s; }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    #hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Aligns content container to the left */
+  overflow: hidden;
+  padding-left: 8%; /* Creates the left-side margin for the text */
+}
+    .hero-bg {
+      position:absolute; inset:0; z-index:0;
+      background: linear-gradient(135deg, #0b0b0b 0%, #1a0505 50%, #0b0b0b 100%);
+    }
+    .hero-bg::after {
+      content:'';
+      position:absolute; inset:0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(232,35,42,.18) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(247,127,0,.12) 0%, transparent 55%);
+    }
+    /* Pizza placeholder */
+    .hero-pizza-wrap {
+      position:absolute; right:-2%; top:50%; transform:translateY(-50%);
+      width:52%; max-width:620px; aspect-ratio:1;
+      z-index:1;
+    }
+    .hero-pizza-placeholder {
+      width:100%; height:100%; border-radius:50%;
+      background: radial-gradient(circle at 35% 35%,
+        #f77f00 0%, #e8232a 30%, #8b1a1a 55%, #1a0505 80%, transparent 100%);
+      display:flex; align-items:center; justify-content:center;
+      font-size:clamp(5rem,14vw,11rem);
+      box-shadow: 0 0 80px rgba(232,35,42,.3), 0 0 160px rgba(247,127,0,.1);
+      animation: floatPizza 5s ease-in-out infinite;
+      position:relative; overflow:hidden;
+    }
+    .hero-pizza-placeholder img {
+      position:absolute; inset:0; border-radius:50%;
+      object-fit:cover; opacity:1;
+    }
+    .hero-pizza-placeholder .img-label {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-size:1rem; color:rgba(255,255,255,.4); font-family:var(--font-body);
+      z-index:2;
+    }
+    @keyframes floatPizza {
+      0%,100% { transform:translateY(0) rotate(-2deg); }
+      50% { transform:translateY(-18px) rotate(2deg); }
+    }
+    .hero-content {
+      position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 600px; /* Limits text width so it doesn't overlap the pizza */
+  margin-left: 0; 
+  text-align: left; /* Ensures all text inside is left-aligned */
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      background: rgba(232,35,42,.12); border:1px solid rgba(232,35,42,.3);
+      padding:6px 16px; border-radius:50px; margin-bottom:24px;
+      font-size:.8rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--orange);
+      animation: fadeDown .8s ease .2s both;
+    }
+    .hero-badge .dot { width:7px; height:7px; border-radius:50%; background:var(--red); animation:pulse 1.5s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      line-height: .95;
+      letter-spacing: 2px;
+      margin-bottom: 22px;
+      animation: fadeDown .8s ease .4s both;
+    }
+    .hero-h1 .accent { color: var(--orange); }
+    .hero-h1 .stroke {
+      -webkit-text-stroke: 2px var(--red);
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.15rem); font-weight:300; line-height:1.7;
+      color: var(--muted); max-width:420px; margin-bottom:36px;
+      animation: fadeDown .8s ease .6s both;
+    }
+    .hero-btns {
+      display:flex; flex-wrap:wrap; gap:14px;
+      animation: fadeDown .8s ease .8s both;
+    }
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:9px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      padding: 14px 28px; border-radius:50px;
+      font-size:.9rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px var(--glow);
+    }
+    .btn-primary:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 8px 36px var(--glow); }
+    .btn-outline {
+      display:inline-flex; align-items:center; gap:9px;
+      border: 2px solid rgba(255,255,255,.2); padding:14px 28px; border-radius:50px;
+      font-size:.9rem; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .btn-outline:hover { border-color:var(--orange); background:rgba(247,127,0,.08); transform:translateY(-3px); }
+
+    .hero-stats {
+      display:flex; gap:32px; margin-top:48px;
+      animation: fadeDown .8s ease 1s both;
+    }
+    .stat-item { }
+    .stat-num {
+      font-family:var(--font-display); font-size:2.2rem;
+      background:linear-gradient(135deg,var(--orange),var(--gold));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .stat-label { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; }
+
+    /* scroll cue */
+    .scroll-cue {
+      position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+      z-index:3; display:flex; flex-direction:column; align-items:center; gap:8px;
+      font-size:.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted);
+      animation: fadeIn 1s ease 1.4s both;
+    }
+    .scroll-cue .line {
+      width:1px; height:40px;
+      background:linear-gradient(to bottom, var(--orange), transparent);
+      animation: scrollLine 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    /* ─── SECTION BASE ───────────────────────────────────── */
+    section { padding: 100px 5%; }
+    .section-label {
+      font-size:.75rem; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+      color:var(--red); margin-bottom:12px;
+    }
+    .section-title {
+      font-family:var(--font-display); font-size:clamp(2.4rem,5vw,4rem);
+      line-height:1; letter-spacing:2px; margin-bottom:20px;
+    }
+    .section-desc { color:var(--muted); max-width:540px; line-height:1.8; }
+    .divider { width:60px; height:3px; background:linear-gradient(90deg,var(--red),var(--orange)); border-radius:2px; margin:20px 0; }
+
+    /* ─── ABOUT ──────────────────────────────────────────── */
+    #about { background: var(--deep); }
+    .about-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-top:60px;
+    }
+    .about-image-wrap {
+      position:relative; border-radius:16px; overflow:hidden;
+      aspect-ratio:4/3;
+    }
+    .about-image-wrap .img-ph {
+      width:100%; height:100%;
+      background: linear-gradient(135deg, #1a0505 0%, #2d0f00 50%, #1a0505 100%);
+      display:flex; align-items:center; justify-content:center;
+      font-size:4rem; color:rgba(255,255,255,.08);
+      position:relative;
+    }
+    .about-image-wrap .img-ph img {
+      position:absolute; inset:0; object-fit:cover;
+      opacity:1; border-radius:16px;
+    }
+    .about-image-wrap::after {
+      content:'';
+      position:absolute; inset:0;
+      border:2px solid rgba(232,35,42,.2);
+      border-radius:16px; pointer-events:none;
+    }
+    .about-image-wrap .img-badge {
+      position:absolute; bottom:20px; right:20px; z-index:2;
+      background: rgba(11,11,11,.85); backdrop-filter:blur(10px);
+      border:1px solid rgba(247,127,0,.3);
+      padding:14px 18px; border-radius:12px;
+      text-align:center;
+    }
+    .about-image-wrap .img-badge .num {
+      font-family:var(--font-display); font-size:2rem; color:var(--gold); display:block; line-height:1;
+    }
+    .about-image-wrap .img-badge .lbl { font-size:.72rem; color:var(--muted); letter-spacing:1px; }
+    .about-highlights { display:flex; flex-direction:column; gap:20px; margin-top:36px; }
+    .highlight-item {
+      display:flex; align-items:flex-start; gap:14px;
+      background:var(--card); border:1px solid var(--border); padding:18px 20px; border-radius:12px;
+      transition: border-color .3s, transform .3s;
+    }
+    .highlight-item:hover { border-color:rgba(247,127,0,.4); transform:translateX(6px); }
+    .highlight-icon { font-size:1.6rem; flex-shrink:0; }
+    .highlight-text h4 { font-size:.95rem; font-weight:700; margin-bottom:4px; }
+    .highlight-text p { font-size:.82rem; color:var(--muted); line-height:1.6; }
+
+    /* ─── MENU ───────────────────────────────────────────── */
+    #menu { background:var(--black); }
+    .menu-header {
+      display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:56px; flex-wrap:wrap; gap:20px;
+    }
+    .menu-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .menu-card {
+      background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+      transition: transform .35s, border-color .35s, box-shadow .35s;
+      cursor:pointer; position:relative; group:true;
+    }
+    .menu-card:hover {
+      transform:translateY(-10px);
+      border-color:rgba(232,35,42,.5);
+      box-shadow:0 20px 50px rgba(0,0,0,.5), 0 0 30px rgba(232,35,42,.12);
+    }
+    .menu-card-img {
+      width:100%; aspect-ratio:16/10; overflow:hidden; position:relative;
+      background: linear-gradient(135deg, #1a0505, #2d1200);
+    }
+    .menu-card-img img { transition:transform .5s ease; }
+    .menu-card:hover .menu-card-img img { transform:scale(1.08); }
+    .menu-card-img .img-label {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-size:.85rem; color:rgba(255,255,255,.25); flex-direction:column; gap:8px;
+    }
+    .menu-card-img .img-emoji { font-size:3rem; }
+    .veg-badge, .nonveg-badge {
+      position:absolute; top:12px; left:12px; z-index:2;
+      width:20px; height:20px; border:2px solid;
+      border-radius:3px; display:flex; align-items:center; justify-content:center;
+    }
+    .veg-badge { border-color:#2d9e4f; }
+    .veg-badge::before { content:''; width:8px; height:8px; border-radius:50%; background:#2d9e4f; }
+    .nonveg-badge { border-color:#e8232a; }
+    .nonveg-badge::before { content:''; width:8px; height:8px; border-radius:50%; background:#e8232a; }
+    .menu-card-body { padding:20px; }
+    .menu-card-body h3 { font-size:1.05rem; font-weight:700; margin-bottom:6px; }
+    .menu-card-body p { font-size:.8rem; color:var(--muted); line-height:1.6; margin-bottom:16px; }
+    .menu-card-footer { display:flex; justify-content:space-between; align-items:center; }
+    .menu-price {
+      font-family:var(--font-display); font-size:1.5rem; letter-spacing:1px;
+      background:linear-gradient(135deg, var(--orange), var(--gold));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .menu-order-btn {
+      background:linear-gradient(135deg,var(--red),var(--orange));
+      border:none; padding:8px 18px; border-radius:50px;
+      font-size:.75rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+      color:#fff; cursor:pointer; transition:transform .2s, box-shadow .2s;
+      font-family:var(--font-body);
+    }
+    .menu-order-btn:hover { transform:scale(1.07); box-shadow:0 4px 16px var(--glow); }
+
+    /* ─── WHY US ─────────────────────────────────────────── */
+    #why { background:var(--deep); }
+    .why-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:56px; }
+    .why-card {
+      background:var(--card); border:1px solid var(--border); border-radius:20px;
+      padding:36px 24px; text-align:center; position:relative; overflow:hidden;
+      transition:transform .35s, border-color .35s;
+    }
+    .why-card::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 0%, rgba(232,35,42,.06), transparent 70%);
+      opacity:0; transition:opacity .35s;
+    }
+    .why-card:hover { transform:translateY(-8px); border-color:rgba(232,35,42,.4); }
+    .why-card:hover::before { opacity:1; }
+    .why-icon {
+      width:70px; height:70px; border-radius:50%;
+      background:linear-gradient(135deg, rgba(232,35,42,.15), rgba(247,127,0,.1));
+      border:1px solid rgba(247,127,0,.2);
+      display:flex; align-items:center; justify-content:center; font-size:1.9rem;
+      margin:0 auto 20px;
+      transition:transform .3s;
+    }
+    .why-card:hover .why-icon { transform:scale(1.12) rotate(5deg); }
+    .why-card h3 { font-size:1rem; font-weight:700; margin-bottom:10px; }
+    .why-card p { font-size:.82rem; color:var(--muted); line-height:1.7; }
+    .why-card .why-num {
+      position:absolute; top:16px; right:20px;
+      font-family:var(--font-display); font-size:3rem; color:rgba(255,255,255,.04); line-height:1;
+    }
+
+    /* ─── GALLERY ────────────────────────────────────────── */
+    #gallery { background:var(--black); }
+    .gallery-grid {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows: auto auto;
+      gap:16px; margin-top:56px;
+    }
+    .gallery-item {
+      border-radius:14px; overflow:hidden; position:relative; cursor:pointer;
+    }
+    .gallery-item:first-child { grid-row:span 2; }
+    .gallery-item-inner {
+      width:100%; height:100%; min-height:180px;
+      background:linear-gradient(135deg, #1a0505, #2d1200);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:8px;
+      transition:transform .4s ease;
+    }
+    .gallery-item:hover .gallery-item-inner { transform:scale(1.05); }
+    .gallery-item-inner img {
+      position:absolute; inset:0; object-fit:cover; width:100%; height:100%;
+      transition:transform .4s ease;
+    }
+    .gallery-item:hover .gallery-item-inner img { transform:scale(1.08); }
+    .gallery-item-inner .g-emoji { font-size:2.5rem; position:relative; z-index:1; }
+    .gallery-item-inner .g-label {
+      font-size:.8rem; color:rgba(255,255,255,.3); position:relative; z-index:1;
+    }
+    .gallery-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(11,11,11,.8), transparent 60%);
+      opacity:0; transition:opacity .3s;
+      display:flex; align-items:flex-end; padding:20px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity:1; }
+    .gallery-overlay span { font-size:.85rem; font-weight:600; color:var(--cream); }
+
+    /* ─── REVIEWS ────────────────────────────────────────── */
+    #reviews { background:var(--deep); }
+    .reviews-track-wrap { overflow:hidden; position:relative; margin-top:56px; }
+    .reviews-track {
+      display:flex; gap:24px;
+      animation: scrollReviews 30s linear infinite;
+      width:max-content;
+    }
+    .reviews-track:hover { animation-play-state:paused; }
+    @keyframes scrollReviews {
+      from { transform:translateX(0); }
+      to   { transform:translateX(-50%); }
+    }
+    .review-card {
+      background:var(--card); border:1px solid var(--border); border-radius:20px;
+      padding:28px; width:330px; flex-shrink:0;
+      transition:border-color .3s;
+    }
+    .review-card:hover { border-color:rgba(247,127,0,.35); }
+    .review-top { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+    .review-avatar {
+      width:46px; height:46px; border-radius:50%;
+      background:linear-gradient(135deg,var(--red),var(--orange));
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:1.3rem; color:#fff; flex-shrink:0;
+    }
+    .review-name { font-weight:700; font-size:.95rem; }
+    .review-date { font-size:.75rem; color:var(--muted); }
+    .stars { color:var(--gold); font-size:.9rem; letter-spacing:2px; margin-bottom:14px; }
+    .review-text { font-size:.85rem; color:var(--muted); line-height:1.75; }
+    .google-badge {
+      display:inline-flex; align-items:center; gap:5px; margin-top:16px;
+      font-size:.72rem; color:var(--muted);
+    }
+    .google-g { font-size:.9rem; font-weight:700; }
+    .g-blue{color:#4285F4}.g-red{color:#EA4335}.g-yellow{color:#FBBC05}.g-green{color:#34A853}
+
+    /* fade edges on review track */
+    .reviews-track-wrap::before,
+    .reviews-track-wrap::after {
+      content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none;
+    }
+    .reviews-track-wrap::before { left:0; background:linear-gradient(to right, var(--deep), transparent); }
+    .reviews-track-wrap::after  { right:0; background:linear-gradient(to left, var(--deep), transparent); }
+
+    /* ─── CONTACT ────────────────────────────────────────── */
+    #contact { background:var(--black); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; margin-top:60px; align-items:start; }
+    .contact-info { display:flex; flex-direction:column; gap:24px; }
+    .contact-card {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:22px 24px; display:flex; gap:16px; align-items:flex-start;
+      transition:border-color .3s, transform .3s;
+    }
+    .contact-card:hover { border-color:rgba(247,127,0,.35); transform:translateX(6px); }
+    .contact-card-icon { font-size:1.6rem; flex-shrink:0; margin-top:2px; }
+    .contact-card h4 { font-size:.85rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:6px; }
+    .contact-card p, .contact-card a { font-size:1rem; font-weight:600; color:var(--text); }
+    .contact-card a:hover { color:var(--orange); }
+    .map-wrap {
+      border-radius:16px; overflow:hidden; aspect-ratio:4/3; position:relative;
+      background:var(--card); border:1px solid var(--border);
+    }
+    .map-ph {
+      width:100%; height:100%;
+      background: linear-gradient(135deg,#111,#1a1a1a);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px; color:var(--muted); font-size:.9rem;
+    }
+    .map-ph .map-pin { font-size:3rem; animation:bouncePin 1.5s ease-in-out infinite; }
+    @keyframes bouncePin { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .wa-contact-btn {
+      display:inline-flex; align-items:center; gap:12px;
+      background:linear-gradient(135deg,#25d366,#128c7e);
+      padding:16px 32px; border-radius:50px; margin-top:8px;
+      font-size:1rem; font-weight:700; letter-spacing:.5px;
+      transition:transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(37,211,102,.25);
+    }
+    .wa-contact-btn:hover { transform:translateY(-3px); box-shadow:0 8px 36px rgba(37,211,102,.35); }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background:var(--deep); border-top:1px solid var(--border);
+      padding:48px 5% 32px;
+      display:flex; flex-direction:column; align-items:center; gap:24px; text-align:center;
+    }
+    .footer-logo { font-family:var(--font-display); font-size:2rem; letter-spacing:2px;
+      background:linear-gradient(135deg,var(--red),var(--orange)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .footer-tagline { font-size:.82rem; color:var(--muted); }
+    .footer-copy { font-size:.75rem; color:rgba(255,255,255,.2); border-top:1px solid var(--border); width:100%; padding-top:24px; }
+
+    /* ─── FLOATING WA BUTTON ─────────────────────────────── */
+    .float-wa {
+      position:fixed; bottom:28px; right:28px; z-index:9998;
+      width:60px; height:60px; border-radius:50%;
+      background:linear-gradient(135deg,#25d366,#128c7e);
+      display:flex; align-items:center; justify-content:center; font-size:1.7rem;
+      box-shadow:0 6px 24px rgba(37,211,102,.4);
+      transition:transform .2s, box-shadow .2s;
+      animation:waPop .5s ease 1.5s both;
+    }
+    .float-wa:hover { transform:scale(1.12) rotate(-5deg); box-shadow:0 10px 36px rgba(37,211,102,.5); }
+    .float-wa .wa-pulse {
+      position:absolute; inset:-6px; border-radius:50%;
+      border:2px solid rgba(37,211,102,.4);
+      animation:waPulse 2s ease-out infinite;
+    }
+    @keyframes waPop { from{opacity:0;transform:scale(0)} to{opacity:1;transform:scale(1)} }
+    @keyframes waPulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.6);opacity:0} }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media(max-width:960px) {
+      .hero-pizza-wrap { width:45%; right:-5%; }
+      .menu-grid { grid-template-columns:repeat(2,1fr); }
+      .why-grid { grid-template-columns:repeat(2,1fr); }
+      .about-grid, .contact-grid { grid-template-columns:1fr; gap:40px; }
+      .gallery-grid { grid-template-columns:repeat(2,1fr); }
+      .gallery-item:first-child { grid-row:span 1; }
+    }
+    @media(max-width:680px) {
+      nav { padding:14px 5%; }
+      .nav-links, .nav-cta { display:none; }
+      .hamburger { display:flex; }
+      .hero-pizza-wrap { display:none; }
+      .hero-content { margin-left:0; max-width:100%; width:100%; }
+      .hero-stats { gap:20px; }
+      .menu-grid { grid-template-columns:1fr; }
+      .why-grid { grid-template-columns:1fr 1fr; }
+      .gallery-grid { grid-template-columns:1fr; }
+      section { padding:70px 5%; }
+      .reviews-track { animation-duration:20s; }
+    }
+
+    /* Mobile nav overlay */
+    .mobile-nav {
+      position:fixed; inset:0; z-index:999;
+      background:rgba(11,11,11,.97); backdrop-filter:blur(20px);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:32px;
+      opacity:0; pointer-events:none;
+      transition:opacity .35s;
+    }
+    .mobile-nav.open { opacity:1; pointer-events:all; }
+    .mobile-nav a {
+      font-family:var(--font-display); font-size:2.8rem; letter-spacing:2px;
+      color:var(--text); transition:color .2s;
+    }
+    .mobile-nav a:hover { color:var(--orange); }
+    .mobile-nav-close {
+      position:absolute; top:24px; right:24px; font-size:2rem; cursor:pointer; color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ────────────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-logo">Pizza Paradise</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="https://wa.me/917204304336" target="_blank">Order Now 🍕</a>
+  <div class="hamburger" id="menuBtn">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-close" id="navClose">✕</div>
+  <a href="#about" class="mob-link">About</a>
+  <a href="#menu" class="mob-link">Menu</a>
+  <a href="#gallery" class="mob-link">Gallery</a>
+  <a href="#reviews" class="mob-link">Reviews</a>
+  <a href="#contact" class="mob-link">Contact</a>
+</div>
+
+<!-- ─── HERO ───────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pizza-wrap">
+    <div class="hero-pizza-placeholder">
+      <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&q=80" alt="Hero Pizza" />
+    </div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span>Now Open · Jalahalli West</div>
+    <h1 class="hero-h1">Hot & Fresh<br><span class="accent">Pizza</span> In<br><span class="stroke">Jalahalli</span> 🍕</h1>
+    <p class="hero-sub">Delicious, affordable & made with love — your neighbourhood pizza spot in Bengaluru.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="https://wa.me/917204304336?text=Hi%2C+I%27d+like+to+order+a+pizza!" target="_blank">Order on WhatsApp</a>
+      <a class="btn-outline" href="#menu">View Menu</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">4.7⭐</div><div class="stat-label">Google Rating</div></div>
+      <div class="stat-item"><div class="stat-num">₹99+</div><div class="stat-label">Starting Price</div></div>
+      <div class="stat-item"><div class="stat-num">23+</div><div class="stat-label">Happy Reviews</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="line"></div>Scroll</div>
+</section>
+
+<!-- ─── ABOUT ──────────────────────────────────────────── -->
+<section id="about">
+  <div class="section-label reveal">Our Story</div>
+  <div class="about-grid">
+    <div class="about-image-wrap reveal-left">
+      <div class="img-ph">
+        <!-- REPLACE: use your storefront image (Image 1) here -->
+        <img src="https://lh3.googleusercontent.com/p/AF1QipOtiR_zdoX3T70MGZrCeFx_HrA-IZAkMDijSfGp=s1360-w1360-h1020-rw" alt="Pizza Paradise Restaurant Interior" />
+      </div>
+      <div class="img-badge">
+        <span class="num">4.7</span>
+        <span class="lbl">Google Rating ⭐</span>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="section-label">About Us</div>
+      <h2 class="section-title">Made With Passion,<br>Served With <span style="color:var(--orange)">Love</span></h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        Pizza Paradise was born from a simple dream — to bring restaurant-quality, stone-baked pizza to the streets of Jalahalli West at prices everyone can afford. Nestled in the heart of the neighbourhood, we're more than a pizza shop; we're the place where <em>meals &amp; memories are made.</em>
+      </p>
+      <p class="section-desc" style="margin-top:16px;">
+        Every pizza is hand-tossed, loaded with the freshest toppings, and baked to golden perfection. Whether it's a quick solo bite or a family feast — Pizza Paradise has you covered, every single time.
+      </p>
+      <div class="about-highlights">
+        <div class="highlight-item">
+          <div class="highlight-icon">🍅</div>
+          <div class="highlight-text">
+            <h4>Fresh Every Day</h4>
+            <p>We source our vegetables and ingredients fresh each morning — no shortcuts, ever.</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-icon">🏘️</div>
+          <div class="highlight-text">
+            <h4>Local Favourite</h4>
+            <p>Rated 4.7 on Google with 23+ glowing reviews from our happy neighbourhood customers.</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-icon">💸</div>
+          <div class="highlight-text">
+            <h4>Pocket Friendly</h4>
+            <p>Premium taste starting at just ₹99. Because good food should never cost a fortune.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MENU ───────────────────────────────────────────── -->
+<section id="menu">
+  <div class="menu-header">
+    <div class="reveal">
+      <div class="section-label">Our Specialities</div>
+      <h2 class="section-title">Menu <span style="color:var(--orange)">Highlights</span></h2>
+      <div class="divider"></div>
+    </div>
+    <a class="btn-outline reveal" href="https://wa.me/917204304336?text=Can+I+see+your+full+menu?" target="_blank" style="font-size:.8rem;padding:12px 22px">Full Menu on WhatsApp →</a>
+  </div>
+  <div class="menu-grid">
+
+    <!-- Card 1 -->
+    <div class="menu-card reveal">
+      <div class="menu-card-img">
+        <div class="veg-badge"></div>
+        <!-- REPLACE: Veg Pizza image -->
+        <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=75" alt="Veg Delight Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Veg Delight</h3>
+        <p>Loaded with fresh capsicum, onions, mushrooms &amp; olives on a rich tomato base.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹119</span>
+          <button class="menu-order-btn" onclick="orderWA('Veg Delight Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="menu-card reveal" style="transition-delay:.1s">
+      <div class="menu-card-img">
+        <div class="veg-badge"></div>
+        <!-- REPLACE: Cheese Pizza image -->
+        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=75" alt="Cheese Burst Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Cheese Burst</h3>
+        <p>Double-stuffed mozzarella crust oozing with molten cheese on every bite.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹149</span>
+          <button class="menu-order-btn" onclick="orderWA('Cheese Burst Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="menu-card reveal" style="transition-delay:.2s">
+      <div class="menu-card-img">
+        <div class="veg-badge"></div>
+        <!-- REPLACE: Farmhouse Pizza image -->
+        <img src="https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=600&q=75" alt="Farmhouse Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Farmhouse Special</h3>
+        <p>A garden party on pizza — sweet corn, baby corn, capsicum &amp; creamy sauce.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹129</span>
+          <button class="menu-order-btn" onclick="orderWA('Farmhouse Special Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="menu-card reveal" style="transition-delay:.05s">
+      <div class="menu-card-img">
+        <div class="nonveg-badge"></div>
+        <!-- REPLACE: Chicken Tikka Pizza image -->
+        <img src="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=600&q=75" alt="Chicken Tikka Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Chicken Tikka</h3>
+        <p>Juicy tandoori chicken chunks with smoky spices &amp; creamy tikka sauce.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹169</span>
+          <button class="menu-order-btn" onclick="orderWA('Chicken Tikka Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="menu-card reveal" style="transition-delay:.15s">
+      <div class="menu-card-img">
+        <div class="veg-badge"></div>
+        <!-- REPLACE: Paneer Pizza image -->
+        <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&q=75" alt="Paneer Paradise Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Paneer Paradise</h3>
+        <p>Soft malai paneer cubes marinated in spiced yoghurt — a vegetarian's dream.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹139</span>
+          <button class="menu-order-btn" onclick="orderWA('Paneer Paradise Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="menu-card reveal" style="transition-delay:.25s">
+      <div class="menu-card-img">
+        <div class="nonveg-badge"></div>
+        <!-- REPLACE: Chicken Pepperoni image -->
+        <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=75" alt="Chicken Pepperoni Pizza" />
+      </div>
+      <div class="menu-card-body">
+        <h3>Chicken Pepperoni</h3>
+        <p>Classic crowd-pleaser — spicy chicken pepperoni slices on melted mozzarella.</p>
+        <div class="menu-card-footer">
+          <span class="menu-price">₹179</span>
+          <button class="menu-order-btn" onclick="orderWA('Chicken Pepperoni Pizza')">Order</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── WHY US ─────────────────────────────────────────── -->
+<section id="why">
+  <div style="text-align:center" class="reveal">
+    <div class="section-label">Why Pizza Paradise?</div>
+    <h2 class="section-title">More Than Just <span style="color:var(--orange)">Pizza</span></h2>
+    <div class="divider" style="margin:20px auto"></div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <div class="why-num">01</div>
+      <div class="why-icon">🌿</div>
+      <h3>Fresh Ingredients</h3>
+      <p>Daily-sourced vegetables, quality cheese &amp; handmade dough — every single day, no exceptions.</p>
+    </div>
+    <div class="why-card reveal" style="transition-delay:.1s">
+      <div class="why-num">02</div>
+      <div class="why-icon">💰</div>
+      <h3>Budget Friendly</h3>
+      <p>Restaurant-grade pizza starting at just ₹99. Great food should be for everyone.</p>
+    </div>
+    <div class="why-card reveal" style="transition-delay:.2s">
+      <div class="why-num">03</div>
+      <div class="why-icon">⚡</div>
+      <h3>Fast Service</h3>
+      <p>Quick prep, hot pizza. Whether dine-in or takeaway, we respect your time &amp; hunger.</p>
+    </div>
+    <div class="why-card reveal" style="transition-delay:.3s">
+      <div class="why-num">04</div>
+      <div class="why-icon">⭐</div>
+      <h3>4.7 Google Rating</h3>
+      <p>Trusted by 23+ verified customers who keep coming back for more — and bringing friends.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── GALLERY ────────────────────────────────────────── -->
+<section id="gallery">
+  <div class="reveal" style="text-align:center">
+    <div class="section-label">Visual Feast</div>
+    <h2 class="section-title">Our <span style="color:var(--orange)">Gallery</span></h2>
+    <div class="divider" style="margin:20px auto 0"></div>
+  </div>
+  <div class="gallery-grid reveal" style="margin-top:56px">
+    <!-- REPLACE: Use your actual restaurant photos here -->
+    <div class="gallery-item">
+      <div class="gallery-item-inner">
+        <img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800&q=75" alt="Pizza Gallery 1"/>
+      </div>
+      <div class="gallery-overlay"><span>Wood Fired Special 🔥</span></div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-item-inner">
+        <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAFNTDpdXZZM8eWdmWECGarBYRW72egBYPM62yGoUsXfPVkcifAz8WXlYcfutgrNL5TZvIZ3EhyX6jHzWMvy4D2oqTRWSAxOpUkIMIMc6XBX-vkYxGghzSqI9xAG27rPUjnbE5SUoFgDvN7Q=s1360-w1360-h1020-rw" alt="Gallery 2"/>
+      </div>
+      <div class="gallery-overlay"><span>Veg Loaded 🌿</span></div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-item-inner">
+        <img src="https://lh3.googleusercontent.com/p/AF1QipNXyRpwasq9EIrVjtCNIci6tlsQly-SX1_VZAxC=s1360-w1360-h1020-rw" alt="Gallery 3"/>
+      </div>
+      <div class="gallery-overlay"><span>Our Cozy Interior ✨</span></div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-item-inner">
+        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=75" alt="Gallery 4"/>
+      </div>
+      <div class="gallery-overlay"><span>Cheese Heaven 🧀</span></div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-item-inner">
+        <img src="https://lh3.googleusercontent.com/p/AF1QipP_sTr76JFXm42iKhaTGYfZ1fWE52MFbh29-aSd=s1360-w1360-h1020-rw" alt="Gallery 5"/>
+      </div>
+      <div class="gallery-overlay"><span>Non-Veg Delights 🍗</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── REVIEWS ────────────────────────────────────────── -->
+<section id="reviews">
+  <div class="reveal" style="text-align:center">
+    <div class="section-label">Customer Love</div>
+    <h2 class="section-title">What People <span style="color:var(--orange)">Say</span></h2>
+    <div class="divider" style="margin:20px auto 0"></div>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:16px">4.7 ⭐ · 23 reviews on Google Maps</p>
+  </div>
+
+  <div class="reviews-track-wrap reveal" style="margin-top:48px">
+    <div class="reviews-track" id="reviewsTrack">
+      <!-- Review 1 -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar">A</div>
+          <div>
+            <div class="review-name">Aditya Kumar</div>
+            <div class="review-date">2 weeks ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Honestly one of the best budget pizza places in Jalahalli! The cheese burst was absolutely loaded and arrived piping hot. Will definitely be back!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <!-- Review 2 -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">P</div>
+          <div>
+            <div class="review-name">Priya Sharma</div>
+            <div class="review-date">1 month ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Super affordable and genuinely delicious. The paneer pizza was packed with toppings — not stingy at all! The staff is very friendly too. My new go-to spot 🍕"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <!-- Review 3 -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#11998e,#38ef7d)">R</div>
+          <div>
+            <div class="review-name">Rahul Nair</div>
+            <div class="review-date">3 weeks ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★☆</div>
+        <p class="review-text">"Really good value for money. The farmhouse pizza had fresh veggies and a nice crisp crust. Place is small but cozy. Parking nearby is easy. Would recommend!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <!-- Review 4 -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#f093fb,#f5576c)">S</div>
+          <div>
+            <div class="review-name">Sneha Rao</div>
+            <div class="review-date">5 days ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Ordered chicken tikka pizza through WhatsApp — super easy! Came fresh and hot. The tikka sauce was spot on, reminded me of proper restaurant quality. Amazing at this price!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <!-- Review 5 -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#ffecd2,#fcb69f);color:#333">M</div>
+          <div>
+            <div class="review-name">Mohan Krishnan</div>
+            <div class="review-date">2 months ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Hidden gem in Jalahalli! The ambience is warm and welcoming, the pizzas are genuinely tasty, and prices are unbeatable. My whole family loves this place now!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <!-- Duplicate for infinite scroll -->
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar">A</div>
+          <div>
+            <div class="review-name">Aditya Kumar</div>
+            <div class="review-date">2 weeks ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Honestly one of the best budget pizza places in Jalahalli! The cheese burst was absolutely loaded and arrived piping hot. Will definitely be back!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">P</div>
+          <div>
+            <div class="review-name">Priya Sharma</div>
+            <div class="review-date">1 month ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Super affordable and genuinely delicious. The paneer pizza was packed with toppings — not stingy at all! The staff is very friendly too. My new go-to spot 🍕"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#11998e,#38ef7d)">R</div>
+          <div>
+            <div class="review-name">Rahul Nair</div>
+            <div class="review-date">3 weeks ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★☆</div>
+        <p class="review-text">"Really good value for money. The farmhouse pizza had fresh veggies and a nice crisp crust. Place is small but cozy. Parking nearby is easy. Would recommend!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#f093fb,#f5576c)">S</div>
+          <div>
+            <div class="review-name">Sneha Rao</div>
+            <div class="review-date">5 days ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Ordered chicken tikka pizza through WhatsApp — super easy! Came fresh and hot. The tikka sauce was spot on, reminded me of proper restaurant quality. Amazing at this price!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#ffecd2,#fcb69f);color:#333">M</div>
+          <div>
+            <div class="review-name">Mohan Krishnan</div>
+            <div class="review-date">2 months ago</div>
+          </div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Hidden gem in Jalahalli! The ambience is warm and welcoming, the pizzas are genuinely tasty, and prices are unbeatable. My whole family loves this place now!"</p>
+        <div class="google-badge">
+          <span class="google-g"><span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span></span>
+          Review
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ────────────────────────────────────────── -->
+<section id="contact">
+  <div class="reveal">
+    <div class="section-label">Find Us</div>
+    <h2 class="section-title">Visit or <span style="color:var(--orange)">Order</span> Today</h2>
+    <div class="divider"></div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info reveal-left">
+      <div class="contact-card">
+        <div class="contact-card-icon">📍</div>
+        <div>
+          <h4>Address</h4>
+          <p>Jalahalli West, Bengaluru, Karnataka 560015</p>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">📞</div>
+        <div>
+          <h4>Phone</h4>
+          <a href="tel:+917204304336">+91 72043 04336</a><br>
+          <a href="tel:+918088371245" style="font-size:.85rem;color:var(--muted)">+91 80883 71245</a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">🕐</div>
+        <div>
+          <h4>Hours</h4>
+          <p>Mon – Sun: 11:00 AM – 11:00 PM</p>
+        </div>
+      </div>
+      <a class="wa-contact-btn" href="https://wa.me/917204304336?text=Hi%2C+I%27d+like+to+order+from+Pizza+Paradise!" target="_blank">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.122 1.524 5.855L0 24l6.303-1.654A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374A9.861 9.861 0 012.118 12C2.118 6.533 6.533 2.118 12 2.118S21.882 6.533 21.882 12 17.467 21.882 12 21.882z"/></svg>
+        Chat on WhatsApp
+      </a>
+    </div>
+    <div class="map-wrap reveal-right">
+      <!-- REPLACE: Embed actual Google Maps iframe for Jalahalli West -->
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.024623965!2d77.51999!3d13.04!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzI0LjAiTiA3N8KwMzEnMTIuMCJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+        width="100%" height="100%" style="border:0;border-radius:16px;filter:invert(90%) hue-rotate(180deg);" 
+        allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">Pizza Paradise 🍕</div>
+  <p class="footer-tagline">Meals & Memories are made here · Jalahalli West, Bengaluru</p>
+  <p class="footer-copy">© 2026 Pizza Paradise. All rights reserved. · Designed with ❤️ for your city's best pizza.</p>
+</footer>
+
+<!-- ─── FLOATING WA ─────────────────────────────────────── -->
+<a class="float-wa" href="https://wa.me/917204304336?text=Hi%2C+I%27d+like+to+order+from+Pizza+Paradise!" target="_blank" title="Order on WhatsApp">
+  <div class="wa-pulse"></div>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.122 1.524 5.855L0 24l6.303-1.654A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374A9.861 9.861 0 012.118 12C2.118 6.533 6.533 2.118 12 2.118S21.882 6.533 21.882 12 17.467 21.882 12 21.882z"/></svg>
+</a>
+
+<script>
+  // ─── NAV SCROLL ──────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ─── MOBILE NAV ──────────────────────────────────────────
+  const mobileNav = document.getElementById('mobileNav');
+  document.getElementById('menuBtn').addEventListener('click', () => mobileNav.classList.add('open'));
+  document.getElementById('navClose').addEventListener('click', () => mobileNav.classList.remove('open'));
+  document.querySelectorAll('.mob-link').forEach(l => l.addEventListener('click', () => mobileNav.classList.remove('open')));
+
+  // ─── SCROLL REVEAL ───────────────────────────────────────
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const delay = parseFloat(e.target.style.transitionDelay || '0') * 1000;
+        setTimeout(() => e.target.classList.add('visible'), delay);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // ─── ORDER ON WHATSAPP ────────────────────────────────────
+  function orderWA(item) {
+    const msg = encodeURIComponent(`Hi! I'd like to order a ${item} from Pizza Paradise 🍕`);
+    window.open(`https://wa.me/917204304336?text=${msg}`, '_blank');
+  }
+
+  // ─── PARALLAX HERO ───────────────────────────────────────
+  const heroPizza = document.querySelector('.hero-pizza-wrap');
+  window.addEventListener('scroll', () => {
+    if (heroPizza) {
+      heroPizza.style.transform = `translateY(calc(-50% + ${window.scrollY * 0.25}px))`;
+    }
+  }, { passive: true });
+
+  // ─── STAGGERED MENU CARDS ────────────────────────────────
+  document.querySelectorAll('.menu-card').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.08) + 's';
+  });
+</script>
+</body>
+</html>
